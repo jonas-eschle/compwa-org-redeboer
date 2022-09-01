@@ -264,9 +264,7 @@ def get_execution_mode() -> str:
     if "FORCE_EXECUTE_NB" in os.environ:
         print_once("\033[93;1mWill run ALL Jupyter notebooks!\033[0m")
         return "force"
-    if "EXECUTE_NB" in os.environ:
-        return "cache"
-    return "off"
+    return "cache" if "EXECUTE_NB" in os.environ else "off"
 
 
 @lru_cache(maxsize=None)
@@ -451,15 +449,10 @@ class MyStyle(UnsrtStyle):
 
     def format_names(self, role, as_sentence=True) -> Node:
         formatted_names = names(role, sep=", ", sep2=" and ", last_sep=", and ")
-        if as_sentence:
-            return sentence[formatted_names]
-        else:
-            return formatted_names
+        return sentence[formatted_names] if as_sentence else formatted_names
 
     def format_eprint(self, e):
-        if "doi" in e.fields:
-            return ""
-        return super().format_eprint(e)
+        return "" if "doi" in e.fields else super().format_eprint(e)
 
     def format_url(self, e: Entry) -> Node:
         if "doi" in e.fields or "eprint" in e.fields:
